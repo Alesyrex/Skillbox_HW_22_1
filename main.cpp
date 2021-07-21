@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 
 bool correct_phone (std::string phone) {
     if (phone.length() != 8 || phone[2] != '-' || phone[5] != '-')
@@ -25,7 +26,8 @@ bool correct_name (std::string name) {
 
 int main() {
 
-    std::map<std::string, std::string> phonebook;
+    std::map<std::string, std::string> phonebookName;
+    std::map<std::string, std::vector<std::string>> phonebookNumber;
 
     std::string answer, name = " ", phone = " ";
     int request = 0;
@@ -61,19 +63,28 @@ int main() {
         }
 
         if (request == 1) {
-            phonebook.insert(std::pair<std::string,std::string>(phone,name));
+            phonebookName.insert(std::pair<std::string,std::string>(phone,name));
+
+            std::vector<std::string> vec;
+            vec.push_back(phone);
+            std::map<std::string, std::vector<std::string>>::iterator itName = phonebookNumber.find(name);
+            if (itName == phonebookNumber.end())
+                phonebookNumber.insert(std::pair<std::string, std::vector<std::string>> (name,vec));
+            else
+                itName->second.push_back(phone);
             std::cout << "Data added!" << std::endl;
         }
 
         if (request == 2) {
-            std::cout << "Phone: " << phone << " Name: " << phonebook.find(phone)->second << std::endl;
+            std::cout << "Phone: " << phone << " Name: " << phonebookName.find(phone)->second << std::endl;
         }
         if (request == 3) {
             std::cout << "Name: " << name << " Phone: " << std::endl;
-            for (std::map<std::string,std::string>::iterator itf = phonebook.begin();
-                 itf != phonebook.end();++itf){
-                if (itf->second == name)
-                    std::cout << itf->first << std::endl;
+
+            std::map<std::string, std::vector<std::string>>::iterator itName = phonebookNumber.find(name);
+            int amountNumbers = itName->second.size();
+            for (int i=0;i < amountNumbers;++i){
+                    std::cout << itName->second[i] << std::endl;
             }
         }
     }
